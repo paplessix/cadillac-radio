@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadillac Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cutive+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/radio.css" />
+</head>
+<body>
+  <div id="room">
+    <div id="radio-body">
+
+      <div id="brand-strip">
+        <span id="brand-name">CADILLAC</span>
+        <span id="model-name">SERIES&nbsp;I &middot; AM RECEIVER</span>
+      </div>
+
+      <div id="panel">
+        <div class="tube" id="tube-l">
+          <div class="tube-bulb">
+            <div class="tube-glow"></div>
+            <div class="tube-plate"></div>
+            <div class="tube-grid"></div>
+            <div class="tube-cathode"></div>
+          </div>
+          <div class="tube-base"></div>
+        </div>
+
+        <div id="dial-mount">
+          <div id="dial-frame">
+            <canvas id="dial"></canvas>
+            <div id="needle"></div>
+          </div>
+        </div>
+
+        <div class="tube" id="tube-r">
+          <div class="tube-bulb">
+            <div class="tube-glow"></div>
+            <div class="tube-plate"></div>
+            <div class="tube-grid"></div>
+            <div class="tube-cathode"></div>
+          </div>
+          <div class="tube-base"></div>
+        </div>
+
+        <div id="grille">
+          <div id="grille-weave"></div>
+          <div id="grille-vignette"></div>
+        </div>
+      </div>
+
+      <div id="controls">
+
+        <div class="ctrl-zone" id="zone-l">
+          <div class="ctrl-label">L</div>
+          <div class="knob-sm" id="knob-l">
+            <div class="knob-grip-sm"></div>
+            <div class="knob-mark-sm"></div>
+          </div>
+        </div>
+
+        <div class="ctrl-zone" id="zone-c">
+          <div class="ctrl-label">C</div>
+          <div class="knob-lg" id="knob-c">
+            <div class="knob-grip-lg"></div>
+            <div class="knob-mark-lg"></div>
+          </div>
+          <div id="status-line">WARMING UP&hellip;</div>
+        </div>
+
+        <div class="ctrl-zone" id="zone-r">
+          <div class="ctrl-label">R</div>
+          <div class="knob-sm" id="knob-r">
+            <div class="knob-grip-sm"></div>
+            <div class="knob-mark-sm"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/radio.ts"></script>
+</body>
+</html>

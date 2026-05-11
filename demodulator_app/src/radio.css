@@ -1,0 +1,448 @@
+/* ─── Tokens ─────────────────────────────────────────────────────── */
+:root {
+  --wood-0: #080401;
+  --wood-1: #1c0b02;
+  --wood-2: #2e1204;
+  --wood-3: #4a1d07;
+  --wood-4: #6b2d0d;
+  --brass-0: #3d2900;
+  --brass-1: #8a6000;
+  --brass-2: #c8940a;
+  --brass-3: #e6b41e;
+  --brass-4: #f5d060;
+  --dial-bg:  #f5ebb0;
+  --dial-mid: #ecd890;
+  --tube-hot: #ff6600;
+  --needle:   #c41e00;
+  --sig-hi:   #22dd55;
+  --sig-lo:   #003d11;
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Room ───────────────────────────────────────────────────────── */
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  background: #050301;
+  background-image:
+    radial-gradient(ellipse 80% 35% at 50% 75%, #1a0e06 0%, transparent 70%);
+}
+
+/* Subtle grain across the whole room */
+body::after {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+#room {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+}
+
+/* ─── Radio body ─────────────────────────────────────────────────── */
+#radio-body {
+  position: relative;
+  width: min(840px, 95vw);
+  /* Wood grain via layered gradients */
+  background:
+    repeating-linear-gradient(89.4deg,
+      transparent 0, transparent 5px, rgba(0,0,0,.11) 5px, rgba(0,0,0,.11) 6px),
+    repeating-linear-gradient(90.6deg,
+      transparent 0, transparent 11px, rgba(255,255,255,.012) 11px, rgba(255,255,255,.012) 12px),
+    repeating-linear-gradient(88.8deg,
+      transparent 0, transparent 22px, rgba(0,0,0,.05) 22px, rgba(0,0,0,.05) 24px),
+    linear-gradient(172deg, #5c2a0a 0%, #3d1705 18%, #28100 48%, #3a1705 78%, #4e2008 100%);
+  border-radius: 10px 10px 7px 7px;
+  padding-bottom: 20px;
+  box-shadow:
+    inset 0  1px 0 rgba(255,210,80,.1),
+    inset 0 -3px 10px rgba(0,0,0,.45),
+    0 0 0 1.5px var(--wood-4),
+    0 0 0 3px   var(--brass-2),
+    0 0 0 4.5px var(--wood-2),
+    0 14px 45px rgba(0,0,0,.9),
+    0  4px 12px rgba(0,0,0,.6),
+    0 28px 55px rgba(0,0,0,.35);
+  user-select: none;
+  animation: appear .7s ease-out both;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Brand strip ────────────────────────────────────────────────── */
+#brand-strip {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 22px 9px;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(90deg,
+    var(--wood-1) 0%, #0e0602 25%, #0c0501 50%, #0e0602 75%, var(--wood-1) 100%);
+  border-bottom: 1px solid var(--brass-1);
+}
+
+#brand-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 2.6vw, 1.65rem);
+  letter-spacing: .32em;
+  color: var(--brass-3);
+  text-shadow: 0 0 28px rgba(230,180,30,.45), 0 1px 0 rgba(0,0,0,.7);
+}
+
+#model-name {
+  font-family: 'Cutive Mono', monospace;
+  font-size: clamp(.46rem, .95vw, .6rem);
+  letter-spacing: .18em;
+  color: var(--brass-0);
+  opacity: .75;
+}
+
+/* ─── Main panel ─────────────────────────────────────────────────── */
+#panel {
+  display: grid;
+  grid-template-columns: 58px 1fr 58px 82px;
+  align-items: stretch;
+  height: 108px;
+  padding: 10px 10px 0;
+  gap: 9px;
+}
+
+/* ─── Vacuum tubes ───────────────────────────────────────────────── */
+.tube {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  padding-bottom: 2px;
+}
+
+.tube-bulb {
+  position: relative;
+  width: 28px; height: 72px;
+  border: 1px solid rgba(160,110,18,.22);
+  border-radius: 14px 14px 5px 5px;
+  overflow: hidden;
+  background: linear-gradient(180deg,
+    rgba(30,15,4,.0) 0%, rgba(50,22,4,.4) 100%);
+  flex-shrink: 0;
+}
+
+/* Glass highlight */
+.tube-bulb::before {
+  content: '';
+  position: absolute;
+  left: 4px; top: 6px;
+  width: 5px; height: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,.07) 0%, transparent 100%);
+  border-radius: 3px;
+}
+
+.tube-glow {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  animation: tubeWarm 4.5s ease-out forwards, tubePulse 3s ease-in-out 4.5s infinite;
+}
+
+@keyframes tubeWarm {
+  0%   { background: radial-gradient(ellipse at 50% 68%, rgba(255,80,0,.0)  0%, transparent 80%); }
+  25%  { background: radial-gradient(ellipse at 50% 68%, rgba(255,60,0,.06) 0%, transparent 80%); }
+  70%  { background: radial-gradient(ellipse at 50% 68%, rgba(255,80,0,.22) 0%, rgba(255,50,0,.07) 55%, transparent 80%); }
+  100% { background: radial-gradient(ellipse at 50% 68%, rgba(255,95,0,.34) 0%, rgba(255,60,0,.12) 55%, transparent 80%); }
+}
+
+@keyframes tubePulse {
+  0%, 100% { opacity: .85; }
+  50%       { opacity:  1; }
+}
+
+.tube-plate {
+  position: absolute;
+  left: 50%; top: 10px;
+  transform: translateX(-50%);
+  width: 10px; height: 32px;
+  border: 1px solid rgba(180,120,18,.28);
+  border-radius: 2px;
+  background: rgba(90,50,8,.18);
+}
+
+.tube-grid {
+  position: absolute;
+  left: 50%; top: 18px;
+  transform: translateX(-50%);
+  width: 15px; height: 24px;
+  background: repeating-linear-gradient(0deg,
+    transparent 0, transparent 3px,
+    rgba(180,120,18,.22) 3px, rgba(180,120,18,.22) 4px);
+}
+
+.tube-cathode {
+  position: absolute;
+  bottom: 11px; left: 50%;
+  transform: translateX(-50%);
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  animation: cathodeWarm 4.5s ease-out forwards, cathodeIdle 2.8s ease-in-out 4.5s infinite;
+}
+
+@keyframes cathodeWarm {
+  0%   { background: radial-gradient(circle, rgba(255,200,50,0)   0%, transparent 100%); }
+  50%  { background: radial-gradient(circle, rgba(255,170,30,.35) 0%, transparent  80%); }
+  100% { background: radial-gradient(circle, rgba(255,210,60,.88) 0%, rgba(255,150,10,.3) 55%, transparent 100%); }
+}
+
+@keyframes cathodeIdle {
+  0%, 100% { transform: translateX(-50%) scale(1);    opacity: .82; }
+  50%       { transform: translateX(-50%) scale(1.12); opacity:  1; }
+}
+
+.tube-base {
+  width: 30px; height: 11px;
+  background: linear-gradient(180deg, #232323 0%, #111 100%);
+  border: 1px solid #383838;
+  border-radius: 3px 3px 4px 4px;
+  position: relative;
+}
+
+.tube-base::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 4px; right: 4px; height: 1px;
+  background: repeating-linear-gradient(90deg,
+    #444 0, #444 3px, transparent 3px, transparent 6px);
+}
+
+
+/* ─── Frequency dial ─────────────────────────────────────────────── */
+#dial-mount { padding: 0; }
+
+#dial-frame {
+  position: relative;
+  height: 100%;
+  border-radius: 3px;
+  border: 1.5px solid var(--brass-1);
+  overflow: hidden;
+  background: linear-gradient(180deg,
+    #e4d488 0%, #f4eca8 12%, #faf4c0 50%, #f2e8a0 88%, #deca78 100%);
+  box-shadow:
+    inset 0  2px 12px rgba(0,0,0,.28),
+    inset 0 -2px  6px rgba(255,220,70,.14),
+    0 0 0 1px rgba(0,0,0,.5);
+}
+
+/* Warm backlight animation */
+#dial-frame::after {
+  content: '';
+  position: absolute; bottom: -8px; left: -8px; right: -8px; height: 60%;
+  pointer-events: none;
+  animation: dialLight 5.5s ease-out forwards;
+}
+
+@keyframes dialLight {
+  0%   { background: radial-gradient(ellipse at 50% 105%, rgba(255,210,60,.00) 0%, transparent 65%); }
+  35%  { background: radial-gradient(ellipse at 50% 105%, rgba(255,200,50,.08) 0%, transparent 65%); }
+  100% { background: radial-gradient(ellipse at 50% 105%, rgba(255,200,50,.38) 0%, transparent 65%); }
+}
+
+#dial { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ─── Needle ─────────────────────────────────────────────────────── */
+#needle {
+  position: absolute;
+  top: 0; bottom: 0; width: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    var(--needle) 0%, rgba(196,30,0,.88) 50%, var(--needle) 100%);
+  filter: drop-shadow(0 0 3px rgba(196,30,0,.72));
+  pointer-events: none;
+}
+
+#needle::before {
+  content: '';
+  position: absolute;
+  top: 3px; left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border: 5px solid transparent;
+  border-top: 0;
+  border-bottom: 9px solid var(--needle);
+  filter: drop-shadow(0 2px 2px rgba(196,30,0,.5));
+}
+
+/* ─── Speaker grille ─────────────────────────────────────────────── */
+#grille {
+  position: relative;
+  border: 1.5px solid var(--brass-1);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0,0,0,.45);
+}
+
+#grille-weave {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(0,0,0,.55) 0, rgba(0,0,0,.55) 1px,
+      rgba(45,20,4,.25) 1px, rgba(45,20,4,.25) 4.5px),
+    repeating-linear-gradient(90deg,
+      rgba(0,0,0,.45) 0, rgba(0,0,0,.45) 1px,
+      rgba(35,15,3,.25) 1px, rgba(35,15,3,.25) 4.5px),
+    linear-gradient(135deg, #2a1404 0%, #190c02 100%);
+}
+
+#grille-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 72% 82% at 50% 50%,
+    rgba(70,32,4,.0) 0%, rgba(0,0,0,.55) 100%);
+}
+
+/* ─── Controls strip ─────────────────────────────────────────────── */
+#controls {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  padding: 12px 18px 0;
+  gap: 10px;
+}
+
+/* Generic control zone */
+.ctrl-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ctrl-label {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: .48rem;
+  letter-spacing: .32em;
+  color: var(--brass-1);
+  opacity: .78;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ctrl-hint {
+  font-family: 'Cutive Mono', monospace;
+  font-size: .44rem;
+  letter-spacing: .1em;
+  color: rgba(140,100,8,.42);
+  white-space: nowrap;
+}
+
+
+#status-line {
+  font-family: 'Cutive Mono', monospace;
+  font-size: clamp(.46rem, 1vw, .58rem);
+  letter-spacing: .06em;
+  color: rgba(175,125,10,.48);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ── Large centre knob (TUNING) ─────── */
+#zone-tune { gap: 5px; }
+
+#tuning-label { font-size: .52rem; letter-spacing: .38em; }
+
+.knob-lg {
+  position: relative;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  cursor: grab;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,.055) 0%, transparent 42%),
+    radial-gradient(circle at 50% 50%, #1c0e03 0%, #110901 50%, #080501 100%);
+  border: 3px solid #2a1304;
+  box-shadow:
+    0 0 0 1px rgba(200,148,10,.18),
+    0 7px 20px rgba(0,0,0,.8),
+    0 2px  6px rgba(0,0,0,.55),
+    inset 0  1px 0 rgba(255,200,60,.06),
+    inset 0 -3px 8px rgba(0,0,0,.55);
+}
+.knob-lg:active { cursor: grabbing; }
+
+.knob-grip-lg {
+  position: absolute; inset: 5px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    rgba(255,255,255,.022) 0deg, rgba(255,255,255,.022) 3deg,
+    transparent 3deg, transparent 9deg);
+}
+
+.knob-lg::before {
+  content: '';
+  position: absolute; inset: 13px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,148,10,.1);
+  background: radial-gradient(circle at 38% 33%, rgba(255,255,255,.035) 0%, transparent 58%);
+}
+
+.knob-mark-lg {
+  position: absolute;
+  top: 9px; left: 50%;
+  transform: translateX(-50%);
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--brass-4) 0%, var(--brass-2) 100%);
+  box-shadow: 0 0 7px rgba(245,208,96,.85);
+}
+
+/* ── Small flanking knobs (SELECTIVITY / TONE) ── */
+.knob-sm {
+  position: relative;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  cursor: grab;
+  background:
+    radial-gradient(circle at 36% 30%, rgba(255,255,255,.04) 0%, transparent 44%),
+    radial-gradient(circle at 50% 50%, #1a0c03 0%, #0e0801 50%, #070401 100%);
+  border: 2.5px solid #271203;
+  box-shadow:
+    0 0 0 1px rgba(200,148,10,.14),
+    0 5px 14px rgba(0,0,0,.75),
+    0 2px  4px rgba(0,0,0,.5),
+    inset 0  1px 0 rgba(255,190,50,.05),
+    inset 0 -2px 6px rgba(0,0,0,.5);
+}
+.knob-sm:active { cursor: grabbing; }
+
+.knob-grip-sm {
+  position: absolute; inset: 4px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    rgba(255,255,255,.018) 0deg, rgba(255,255,255,.018) 3deg,
+    transparent 3deg, transparent 9deg);
+}
+
+.knob-sm::before {
+  content: '';
+  position: absolute; inset: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,148,10,.08);
+}
+
+/* Indicator: thin line instead of dot, more delicate */
+.knob-mark-sm {
+  position: absolute;
+  top: 6px; left: 50%;
+  transform: translateX(-50%);
+  width: 2px; height: 12px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, var(--brass-3) 0%, var(--brass-1) 100%);
+  box-shadow: 0 0 5px rgba(230,180,30,.65);
+}

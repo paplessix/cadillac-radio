@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Data — MP3 source files and generated plots stay local
+data/*.mp3
+data/am_composite.png
+
+# Node
+demodulator_app/node_modules/
+demodulator_app/dist/
+
+# macOS
+.DS_Store

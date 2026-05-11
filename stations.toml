@@ -1,0 +1,57 @@
+# AM Spectrum Simulation — Station & Simulation Configuration
+# ────────────────────────────────────────────────────────────
+# Used by both generate_am_spectrum.py and rlc_demodulator.py.
+#
+# Adding a new station
+# --------------------
+# Append a [[station]] block with:
+#   label   – short name shown on plots (e.g. "E")
+#   freq    – carrier frequency in Hz
+#   source  – one of:
+#               "auto"          → next unassigned MP3 in data/ (stereo → mono)
+#               "<file.mp3>"    → specific file in data/  (stereo → mono)
+#               "tone"          → 440 + 880 Hz reference tone
+#               "pink"          → band-limited pink noise
+#
+# The demodulator uses these frequencies as tuning-target markers.
+
+[simulation]
+fs_sim       = 500_000  # Simulation sample rate (Hz)
+max_duration = 70.0     # Cap on total duration (s); actual = min(longest_mp3, this)
+mod_index    = 0.80     # AM modulation index (0 < m ≤ 1)
+snr_db       = 25       # Signal-to-noise ratio (dB)
+audio_bw     = 4_500    # Audio bandwidth per station (Hz)
+
+# ── Stations (9 kHz spacing) ──────────────────────────────────────────────────
+
+[[station]]
+label  = "A"
+freq   = 100_000
+source = "125kHz_historique.mp3"
+
+[[station]]
+label  = "B"
+freq   = 112_000
+source = "Kerri Chandler BBC Radio 1 Essential Mix.mp3"
+
+[[station]]
+label  = "C"
+freq   = 125_000
+source = "cap_clair.mp3"     # synthetic 440 + 880 Hz reference
+
+[[station]]
+label  = "D"
+freq   = 145_000
+source = "brainrots.mp3"     # band-limited pink noise
+
+
+[[station]]
+label  = "E"
+freq   = 160_000
+source = "berlin.mp3"     
+
+# Example: add a fifth station on a specific file
+# [[station]]
+# label  = "E"
+# freq   = 143_000
+# source = "my_recording.mp3"
