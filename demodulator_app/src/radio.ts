@@ -223,7 +223,7 @@ async function main() {
   statusLine.textContent = 'WARMING UP…'
 
   try {
-    const r = await fetch('/spectrum.json')
+    const r = await fetch(`${import.meta.env.BASE_URL}spectrum.json`)
     if (!r.ok) throw new Error('spectrum.json not found — run generate_am_spectrum.py first')
     specData = await r.json() as SpectrumData
     requestAnimationFrame(() => {
@@ -234,7 +234,7 @@ async function main() {
 
   statusLine.textContent = 'LOADING…'
   try {
-    const r = await fetch('/am_composite.wav')
+    const r = await fetch(`${import.meta.env.BASE_URL}am_composite.wav`)
     if (!r.ok) throw new Error('am_composite.wav not found')
     const { samples, sampleRate } = parseWav(await r.arrayBuffer())
     rawSamples    = samples
