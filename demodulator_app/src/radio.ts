@@ -107,19 +107,28 @@ function drawDial(canvas: HTMLCanvasElement, f0: number) {
   ctx.restore()
 }
 
-// ── WAV parser (IEEE float-32, 1 ch) ──────────────────────────────
+// ── WAV parser (PCM int16 or IEEE float32, 1 ch) ─────────────────
 function parseWav(buf: ArrayBuffer): { samples: Float32Array; sampleRate: number } {
   const v = new DataView(buf)
-  let pos = 12, sampleRate = 0, dataOffset = 0, dataBytes = 0
+  let pos = 12, audioFormat = 0, sampleRate = 0, bitsPerSample = 0, dataOffset = 0, dataBytes = 0
   while (pos < buf.byteLength - 8) {
     const id   = String.fromCharCode(v.getUint8(pos), v.getUint8(pos+1), v.getUint8(pos+2), v.getUint8(pos+3))
     const size = v.getUint32(pos + 4, true)
     pos += 8
-    if      (id === 'fmt ')  sampleRate = v.getUint32(pos + 4, true)
-    else if (id === 'data') { dataOffset = pos; dataBytes = size; break }
+    if (id === 'fmt ') {
+      audioFormat   = v.getUint16(pos,      true)  // 1=PCM, 3=IEEE float
+      sampleRate    = v.getUint32(pos + 4,  true)
+      bitsPerSample = v.getUint16(pos + 14, true)
+    } else if (id === 'data') { dataOffset = pos; dataBytes = size; break }
     pos += size
   }
-  return { samples: new Float32Array(buf.slice(dataOffset, dataOffset + dataBytes)), sampleRate }
+  const sliced = buf.slice(dataOffset, dataOffset + dataBytes)
+  if (audioFormat === 3 && bitsPerSample === 32) return { samples: new Float32Array(sliced), sampleRate }
+  // PCM int16 → float32 [-1, 1]
+  const pcm = new Int16Array(sliced)
+  const out = new Float32Array(pcm.length)
+  for (let i = 0; i < pcm.length; i++) out[i] = pcm[i] / 32768.0
+  return { samples: out, sampleRate }
 }
 
 // ── Main ───────────────────────────────────────────────────────────
@@ -141,6 +150,8 @@ async function main() {
   let currentSource: AudioBufferSourceNode | null = null
   let playAnchorCtx  = 0    // audioCtx.currentTime at which signal t=0 was playing
   let debounce       = 0
+  // Pending audio buffered before first user gesture unlocks AudioContext
+  let pendingAudio:  { audio: Float32Array; sampleRate: number } | null = null
 
   const worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' })
 
@@ -174,19 +185,36 @@ async function main() {
     playAnchorCtx  = audioCtx.currentTime - off
   }
 
+  // Called on first user gesture — creates AudioContext and plays pending audio
+  function unlockAudio() {
+    if (audioCtx) { if (audioCtx.state === 'suspended') audioCtx.resume(); return }
+    audioCtx = new AudioContext()
+    gainNode = audioCtx.createGain(); gainNode.gain.value = 1; gainNode.connect(audioCtx.destination)
+    if (pendingAudio) {
+      const { audio, sampleRate } = pendingAudio; pendingAudio = null
+      const ab = audioCtx.createBuffer(1, audio.length, sampleRate)
+      ab.copyToChannel(audio, 0)
+      audioBuffer = ab
+      startPlayback(0)
+    }
+  }
+  document.addEventListener('mousedown',  unlockAudio, { once: true })
+  document.addEventListener('touchstart', unlockAudio, { once: true })
+
   // ── DSP worker ─────────────────────────────────────────────────────
   worker.onmessage = (e: MessageEvent<DspResponse>) => {
     const { audio, sampleRate } = e.data
-    if (!audioCtx)  audioCtx = new AudioContext()
-    if (!gainNode)  { gainNode = audioCtx.createGain(); gainNode.gain.value = 1; gainNode.connect(audioCtx.destination) }
-
-    const ab = audioCtx.createBuffer(1, audio.length, sampleRate)
-    ab.copyToChannel(new Float32Array(audio.buffer as ArrayBuffer), 0)
-    audioBuffer = ab
-
-    // Resume from the same position in the signal
-    const elapsed = playAnchorCtx > 0 ? audioCtx.currentTime - playAnchorCtx : 0
-    startPlayback(Math.max(0, elapsed))
+    if (!audioCtx) {
+      // AudioContext not yet unlocked — hold audio until first user gesture
+      pendingAudio = { audio, sampleRate }
+    } else {
+      if (!gainNode) { gainNode = audioCtx.createGain(); gainNode.gain.value = 1; gainNode.connect(audioCtx.destination) }
+      const ab = audioCtx.createBuffer(1, audio.length, sampleRate)
+      ab.copyToChannel(new Float32Array(audio.buffer as ArrayBuffer), 0)
+      audioBuffer = ab
+      const elapsed = playAnchorCtx > 0 ? audioCtx.currentTime - playAnchorCtx : 0
+      startPlayback(Math.max(0, elapsed))
+    }
     statusLine.textContent = `${(getF0(getL(), getC()) / 1000).toFixed(1)} kHz`
   }
 
