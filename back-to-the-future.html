@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RLC Series AM Demodulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/cadillac-radio/assets/lab-_h6cDUz5.js"></script>
+  <link rel="modulepreload" crossorigin href="/cadillac-radio/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/cadillac-radio/assets/lab-CtDZaAiH.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>RLC Series AM Demodulator</h1>
+      <div id="status-bar">
+        <span id="status-text">Initialising…</span>
+        <div id="progress-wrap" hidden>
+          <div id="progress-bar"></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="card" id="spectrum-card">
+      <div class="card-label">SPECTRUM  <span class="dim">80 – 170 kHz</span></div>
+      <canvas id="spectrum-canvas"></canvas>
+    </section>
+
+    <section class="card" id="rlc-card">
+      <div class="card-label">RLC CIRCUIT</div>
+
+      <div id="rlc-readout">
+        <div class="readout-item">
+          <span class="readout-label">f₀</span>
+          <span class="readout-value" id="r-f0">—</span>
+          <span class="readout-unit">kHz</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-label">Q</span>
+          <span class="readout-value" id="r-q">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-label">BW</span>
+          <span class="readout-value" id="r-bw">—</span>
+          <span class="readout-unit">Hz</span>
+        </div>
+      </div>
+
+      <div class="sliders">
+        <label class="slider-row">
+          <span class="slider-sym">L</span>
+          <input type="range" id="sl-L" min="100" max="5000" step="1" value="1000" />
+          <span class="slider-val"><span id="v-L">1000.0</span> <span class="dim">µH</span></span>
+        </label>
+        <label class="slider-row">
+          <span class="slider-sym">C</span>
+          <input type="range" id="sl-C" min="1" max="5000" step="0.1" value="1621" />
+          <span class="slider-val"><span id="v-C">1621.1</span> <span class="dim">pF</span></span>
+        </label>
+        <label class="slider-row">
+          <span class="slider-sym">R</span>
+          <input type="range" id="sl-R" min="-2" max="2.477" step="0.001" value="1" />
+          <span class="slider-val"><span id="v-R">10.0</span> <span class="dim">Ω</span></span>
+        </label>
+      </div>
+
+      <div id="station-presets">
+        <span class="dim" style="font-size:0.75rem;margin-right:0.5rem;">PRESETS</span>
+      </div>
+    </section>
+
+    <section class="card" id="audio-card">
+      <div class="card-label">DEMODULATED AUDIO</div>
+      <canvas id="wave-canvas"></canvas>
+      <div id="transport">
+        <button id="btn-play" disabled>▶ Play</button>
+        <button id="btn-stop" disabled>■ Stop</button>
+        <label class="slider-row" style="gap:0.5rem;flex:1;max-width:220px;">
+          <span class="dim" style="font-size:0.75rem;">VOL</span>
+          <input type="range" id="sl-vol" min="0" max="2" step="0.01" value="1" />
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="chk-loop" />
+          <span>Loop</span>
+        </label>
+      </div>
+      <div id="proc-hint" class="dim" style="font-size:0.72rem;margin-top:0.4rem;">
+        Move sliders to tune the circuit — audio updates automatically.
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>
