@@ -420,7 +420,7 @@ async function main() {
   // ── Load spectrum.json ────────────────────────────────────────────────────
   statusText.textContent = 'Loading spectrum…'
   try {
-    const r = await fetch('/spectrum.json')
+    const r = await fetch(`${import.meta.env.BASE_URL}spectrum.json`)
     if (!r.ok) throw new Error(`spectrum.json not found (${r.status}) — run generate_am_spectrum.py first`)
     specData = await r.json() as SpectrumData
     buildPresetButtons(specData.stations)
@@ -436,7 +436,7 @@ async function main() {
   progressWrap.hidden = false
 
   try {
-    const r = await fetch('/am_composite.wav')
+    const r = await fetch(`${import.meta.env.BASE_URL}am_composite.wav`)
     if (!r.ok) throw new Error(`am_composite.wav not found (${r.status})`)
     const contentLength = parseInt(r.headers.get('content-length') ?? '0')
     const reader = r.body!.getReader()
