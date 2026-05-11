@@ -4,11 +4,13 @@ import type { DspRequest, DspResponse } from './worker'
 interface Station { label: string; freq: number }
 interface SpectrumData { freqsKHz: number[]; psdDb: number[]; stations: Station[] }
 
-// ── WAV parser (IEEE float, 1 channel) ────────────────────────────────────
+// ── WAV parser (PCM int16 or IEEE float32, 1 channel) ────────────────────
 function parseWav(buf: ArrayBuffer): { samples: Float32Array; sampleRate: number } {
   const v = new DataView(buf)
   let pos = 12 // skip 'RIFF' + size + 'WAVE'
   let sampleRate = 0
+  let audioFormat = 0
+  let bitsPerSample = 0
   let dataOffset = 0
   let dataBytes = 0
 
@@ -17,7 +19,9 @@ function parseWav(buf: ArrayBuffer): { samples: Float32Array; sampleRate: number
     const size = v.getUint32(pos + 4, true)
     pos += 8
     if (id === 'fmt ') {
-      sampleRate = v.getUint32(pos + 4, true)
+      audioFormat  = v.getUint16(pos,      true)  // 1=PCM, 3=IEEE float
+      sampleRate   = v.getUint32(pos + 4,  true)
+      bitsPerSample = v.getUint16(pos + 14, true)
     } else if (id === 'data') {
       dataOffset = pos
       dataBytes  = size
@@ -25,11 +29,22 @@ function parseWav(buf: ArrayBuffer): { samples: Float32Array; sampleRate: number
     }
     pos += size
   }
+
   // buf.slice() copies into a new ArrayBuffer starting at offset 0 — always
   // 4-byte aligned, avoiding RangeError when scipy's float WAV has a fact
   // chunk that shifts the data payload to a non-multiple-of-4 offset.
-  const samples = new Float32Array(buf.slice(dataOffset, dataOffset + dataBytes))
-  return { samples, sampleRate }
+  const sliced = buf.slice(dataOffset, dataOffset + dataBytes)
+
+  if (audioFormat === 3 && bitsPerSample === 32) {
+    // IEEE float32 — use directly
+    return { samples: new Float32Array(sliced), sampleRate }
+  }
+
+  // PCM int16 — convert to float32 in [-1, 1]
+  const pcm = new Int16Array(sliced)
+  const out = new Float32Array(pcm.length)
+  for (let i = 0; i < pcm.length; i++) out[i] = pcm[i] / 32768.0
+  return { samples: out, sampleRate }
 }
 
 // ── Analytical biquad BPF magnitude (for filter overlay on spectrum) ──────

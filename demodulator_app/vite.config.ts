@@ -6,7 +6,7 @@ export default defineConfig(({ command }) => ({
   // Production build copies nothing from publicDir; the build script does
   // a targeted copy of only wav + json so MP3 source files stay out of dist.
   publicDir: command === 'serve' ? '../data' : false,
-  base: '/cadillac-radio/',
+  base: command === 'build' ? '/cadillac-radio/' : '/',
   worker: { format: 'es' },
   build: {
     rollupOptions: {

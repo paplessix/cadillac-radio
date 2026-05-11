@@ -159,8 +159,9 @@ print(f"\nSNR target : {SNR_DB} dB  |  "
 
 # ── Save WAV ──────────────────────────────────────────────────────────────────
 out_wav = "data/am_composite.wav"
-wavfile.write(out_wav, FS_SIM, composite.astype(np.float32))
-print(f"\nSaved: {out_wav}  ({FS_SIM/1e3:.0f} kHz, float32, {duration:.1f} s)")
+composite_norm = composite / (np.max(np.abs(composite)) + 1e-12)
+wavfile.write(out_wav, FS_SIM, (composite_norm * 32767).astype(np.int16))
+print(f"\nSaved: {out_wav}  ({FS_SIM/1e3:.0f} kHz, int16, {duration:.1f} s)")
 
 # ── Plot power spectrum ───────────────────────────────────────────────────────
 print("Plotting spectrum …")
