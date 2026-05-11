@@ -26,13 +26,13 @@ audio_bw     = 4_500    # Audio bandwidth per station (Hz)
 
 [[station]]
 label  = "A"
-freq   = 100_000
-source = "125kHz_historique.mp3"
+freq   = 90_000
+source = "Kerri Chandler BBC Radio 1 Essential Mix.mp3"
 
 [[station]]
 label  = "B"
-freq   = 112_000
-source = "Kerri Chandler BBC Radio 1 Essential Mix.mp3"
+freq   = 105_000
+source = "125kHz_historique.mp3"
 
 [[station]]
 label  = "C"

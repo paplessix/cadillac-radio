@@ -193,7 +193,7 @@ async function main() {
     if (pendingAudio) {
       const { audio, sampleRate } = pendingAudio; pendingAudio = null
       const ab = audioCtx.createBuffer(1, audio.length, sampleRate)
-      ab.copyToChannel(audio, 0)
+      ab.copyToChannel(new Float32Array(audio.buffer as ArrayBuffer), 0)
       audioBuffer = ab
       startPlayback(0)
     }
