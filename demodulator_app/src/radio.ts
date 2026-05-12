@@ -10,7 +10,7 @@ const L_MIN = 200,    L_MAX = 5_000,   L_INIT = 1_000
 // C: capacitance pF
 const C_MIN = 200,    C_MAX = 10_000,  C_INIT = 1_621
 // R: resistance Ω — controls bandwidth = R/(4πL)
-const R_MIN = 1,      R_MAX = 500,     R_INIT = 25
+const R_MIN = 1,      R_MAX = 10,      R_INIT = 5
 
 // Dial frequency bounds (Hz)
 const F_MIN = 80_000
