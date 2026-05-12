@@ -94,14 +94,11 @@ function drawDial(canvas: HTMLCanvasElement, f0: number) {
     ctx.beginPath(); ctx.moveTo(x, H * .26); ctx.lineTo(x, H * .44); ctx.stroke()
   }
 
-  // Major ticks + labels
+  // Major ticks (labels removed — dial scale is broken)
   ctx.strokeStyle = 'rgba(70,42,8,.68)'; ctx.lineWidth = 1.5
-  ctx.font = `${Math.round(H * .165)}px 'Cutive Mono', monospace`
-  ctx.fillStyle = 'rgba(68,40,7,.72)'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'
   for (const k of [80, 90, 100, 110, 120, 130, 140, 150, 160, 170]) {
     const x = fx(k * 1000)
     ctx.beginPath(); ctx.moveTo(x, H * .14); ctx.lineTo(x, H * .47); ctx.stroke()
-    ctx.fillText(String(k), x, H * .55)
   }
 
   ctx.restore()
@@ -215,7 +212,7 @@ async function main() {
       const elapsed = playAnchorCtx > 0 ? audioCtx.currentTime - playAnchorCtx : 0
       startPlayback(Math.max(0, elapsed))
     }
-    statusLine.textContent = `${(getF0(getL(), getC()) / 1000).toFixed(1)} kHz`
+    statusLine.textContent = '—'
   }
 
   worker.onerror = e => { statusLine.textContent = `ERR ${e.message}` }
